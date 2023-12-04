@@ -1,0 +1,19 @@
+{% extends 'main/layout.html' %}
+
+{%block title%}
+Апрель
+{%endblock%}
+
+{% block content %}
+<div class="alert">
+  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+  Вы уверены что хотите удалить бронирование безвозвратно?
+</div>
+
+<h1></h1>
+<form method="post" style="margin: 0 auto;">
+    {%csrf_token%}
+    <button style="background: linear-gradient(45deg, #1c38c3, #f0336c);padding: 5px; color: red;text-decoration: none; border-radius: 9px; margin-left:675px;margin-top:200px;  " type="submit">Удалить бронирование</button>
+</form>
+
+{% endblock %}

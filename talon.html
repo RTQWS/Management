@@ -1,0 +1,150 @@
+{% extends 'main/layout.html' %}
+{% load static %}
+     <script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript"
+            src="{% static 'main/js/jquery-barcode.js'%}"></script>
+    <script type="text/javascript"
+            src="{% static 'main/js/jquery-barcode.min.js'%}"></script>
+	
+
+{%block title%}
+
+{%endblock%}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/talon.css' %}">
+<div class="containerHeader positionSticky">
+	<div class="layoutHeader">
+		<div class="pageInfo">
+			<i class="fa-regular fa-file-lines"></i>
+			<h2>Талоны</h2>
+		</div>
+		<div class="containerWelcome">
+			<div class="buttonContainerMenu">
+				<button class="profile">
+					<a  href="{% url 'logout' %}?next=/timeslots/">
+					Выйти
+					</a>
+				</button>
+				<button class="btnMenu">
+					<i class="fa-solid fa-bars"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+	<form class="selectionForm" action=""  method="get">   
+		{{form}}
+		<div class="buttonWrapper">
+			<input class="submitButton" type="submit" value="Поиск">
+		</div>
+	</form>	
+</div>
+
+  <table class="table table-bottom" id="table1">
+            <thead>
+                <tr>
+                    <th>Номер брони</th>
+                    <th>Пользователь</th>
+                    <th>Поставщик</th>
+                    <th>Телефон</th>
+                    <th>Дата</th>
+                    <th>Тайм слот</th>
+                    <th>Просмотр талона</th>
+					{% if user.customeruser.role == 'admin'%}
+						<th>Удалить</th>
+					{%endif%}
+                </tr>
+	        </thead>
+
+     {%for el in booking%}
+		{%if el.coming == False %}
+        
+            
+			{% if user.is_staff == False %}
+				{% if user.customeruser.name == el.provider.name%}
+                <tbody>
+                <tr> 
+                    <td>{%if el.date_created != el.date_updated and  el.message%}
+					<i class="fa-solid fa-info info-icon red"></i>
+					<div class="info-text"> У вас изменения в бронировании.  {{el.message}} </div>
+					{%endif%}
+					<span>{{el.id}}</span></td>
+                    <td>{{el.user}}</td>
+                    <td>{{el.provider.name}}</td>
+                    <td>{{el.user.customeruser.phone}}</td>
+					
+                    <td>{{el.date}}</td>
+                    <td>{{el.timeslot}}</td>
+                    <td><a class="redact" href="{% url 'talon_details' el.id %}"><i class="fa-solid fa-eye"></i></a></td>
+					{% if user.customeruser.role == 'admin'%}
+			            <td><a class="redact" href="{% url 'change_booking_delete' el.id %}"><i class="fa-solid fa-trash delete"></i></a></td>
+					{%endif%}
+                </tr>
+            </tbody>
+				{%endif%}
+			
+			{%else%}
+			
+			
+				{%if user.customeruser.role == 'priemka' or user.customeruser.role == 'dispecher'%}
+					{%if user.customeruser.warehouse.name == el.warehouse.name %}
+											<tbody>
+											<tr> 
+												<td>{%if el.date_created != el.date_updated and el.message%}
+														
+												<i class="fa-solid fa-info info-icon red"></i>
+												<div class="info-text">У вас изменения в бронировании. {{el.message}}</div>
+													
+												{%endif%}
+												<span>{{el.id}}</span></td></td>
+												<td>{{el.user}}</td>
+												<td>{{el.provider.name}}</td>
+												<td>{{el.user.customeruser.phone}}</td>
+												
+												<td>{{el.date}}</td>
+												<td>{{el.timeslot}}</td>
+												<td><a href="{% url 'talon_details' el.id %}" class="redact"><i class="fa-solid fa-eye"></i></a></td>
+												{% if user.customeruser.role == 'admin'%}
+													<td><a href="{% url 'change_booking_delete' el.id %}"><i class="fa-solid fa-trash delete"></i></a></td>
+												{%endif%}
+											</tr>
+										</tbody>
+					{%endif%}
+				{%else%}
+						<tbody>
+							<tr> 
+								<td>{%if el.date_created != el.date_updated and el.message %}
+								<i class="fa-solid fa-info info-icon red"></i>
+								<div class="info-text"> У вас изменения в бронировании. {{el.message}} </div>
+								{%endif%}
+								<span>{{el.id}}</span></td></td>
+								<td>{{el.user}}</td>
+								<td>{{el.provider.name}}</td>
+								<td>{{el.user.customeruser.phone}}</td>
+								
+								<td>{{el.date}}</td>
+								<td>{{el.timeslot}}</td>
+								<td><a class="redact" class="redact" href="{% url 'talon_details' el.id %}"><i class="fa-solid fa-eye"></i></a></td>
+								{% if user.customeruser.role == 'admin'%}
+									<td><a class="redact" href="{% url 'change_booking_delete' el.id %}"><i class="fa-solid fa-trash delete"></i></a></td>
+								{%endif%}
+							</tr>
+						</tbody>
+				{%endif%}
+			{%endif%}
+		{%endif%}
+     {%endfor%}
+    </table>
+
+ 
+  
+
+
+
+
+
+  </div>
+
+{% endblock %}

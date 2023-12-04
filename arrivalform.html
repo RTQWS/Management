@@ -1,0 +1,12 @@
+fsdfsd
+<form method="POST">
+    {% csrf_token %}
+
+        <input type="text" name="number_arrival" id="number_arrival" class="number_arrival" placeholder="Введите номер Перевозки">
+        <input type="text" name="adres" id="adres" class="adres" placeholder="Введите адрес">
+        <input type="number" name="phone" id="phone" class="phone" placeholder="Введите объем">
+        <input type="number" name="vol" id="vol" class="vol" placeholder="Введите объем">
+        <input type="text" name="type_cargo" id="type_cargo" class="type_cargo" placeholder="Введите тип груза">
+        <button type="submit">Отправить</button>
+</form>
+{{error}}

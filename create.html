@@ -1,0 +1,31 @@
+
+  <div class="features">
+    <h1>Бронь</h1>
+    <form method="post">
+      {%csrf_token%}
+        {{form.user}}
+        <br>
+        <br>
+        {{form.date}}
+        <br>
+        <br>
+        {{form.warehouse}}
+        <br>
+        <br>
+        {{form.gate}}
+        <br>
+        <br>
+
+        {{form.timeslot}}
+        <br>
+        <br>
+
+        <span>{{error}}</span>
+      <button class="btn btn-success" type="submit">Забронировать</button>
+    </form>
+
+  </div>
+
+
+
+

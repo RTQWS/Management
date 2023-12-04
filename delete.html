@@ -1,0 +1,39 @@
+{% extends 'main/layout.html' %}
+
+{%block title%}
+Апрель
+{%endblock%}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/delete.css' %}" />
+<div class="containerHeader">
+	<div class="layoutHeader">
+		<div class="pageInfo">
+			<i class="fa-brands fa-wpforms"></i>
+			<h2>Удаление брони</h2>
+		</div>
+		<div class="containerWelcome">
+			<div class="buttonContainerMenu">
+				<button class="profile">
+					<a  href="{% url 'logout' %}?next=/timeslots/">
+					Выйти
+					</a>
+				</button>
+				<button class="btnMenu">
+					<i class="fa-solid fa-bars"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="formWrapper">
+  <form class="forms" method="post">
+    <span class="textInfoForm">Вы уверены что хотите удалить бронирование безвозвратно?</span>
+    {%csrf_token%}
+    <button class="submitButton" type="submit">Удалить бронирование</button>
+  </form>
+</div>
+</div>
+
+{% endblock %}

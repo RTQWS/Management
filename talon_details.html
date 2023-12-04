@@ -1,0 +1,131 @@
+{% extends 'main/layout.html' %}
+{% load static %}
+{%block title%}
+
+{%endblock%}
+
+
+
+{% block content %}
+<script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript"
+            src="{% static 'main/js/jquery-barcode.js'%}"></script>
+    <script type="text/javascript"
+            src="{% static 'main/js/jquery-barcode.min.js'%}"></script>
+            
+<link rel="stylesheet" href="{% static 'main/css/talon.css' %}">
+<div class="containerHeader">
+  <div class="layoutHeader">
+    <div class="pageInfo">
+      <i class="fa-brands fa-wpforms"></i>
+      <h2>Редактировать талон</h2>
+    </div>
+    <div class="containerWelcome">
+      <div class="buttonContainerMenu">
+        <button class="profile">
+          <a  href="{% url 'logout' %}?next=/timeslots/">
+          Выйти
+          </a>
+        </button>
+        <button class="btnMenu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="btnWrapper">
+    <button class="submitButton" onclick="generatePDF()">Сохранить в PDF</button>
+  </div>
+</div>
+  
+<div id="invoice">
+  <div class="talonWrapper">
+      <div class="containerInfo1">
+        <div class="talonInfoHeader">
+          <h2>Талон для въезда на территорию РЦ.</h2>
+          <h2>Предъявите его на КПП</h2>
+        </div>
+        <div class="barcodeContainer">  
+          <svg id="barcode"></svg>     
+          <script>
+            var my_data = "{{ booking.id }}"    
+            JsBarcode("#barcode", my_data, {
+              width: 2.5,
+              height:70,
+              displayValue: false
+            });
+          </script>
+        </div>
+      </div>
+      <div class="containerInfo2">
+        <div class="talonContainer">
+          <label class="talonInfo">
+            <span>Сформирован: </span>
+            <div>{{booking.date_created}}</div>
+          </label>
+          <label class="talonInfo">
+            <span>Номер перевозки: </span>
+            <div>{{booking.id}}</div>
+          </label>
+          <label class="talonInfo">
+            <span>Склад: </span>
+            <div>{{booking.warehouse}}</div>
+          </label>
+          <label class="talonInfo">
+            <span>Телефон: </span>
+            <div>{{booking.warehouse.contact_rc}}</div>
+          </label>
+        </div>
+        <div class="talonContainer">
+          <label class="talonInfo">
+            <span>Поставщик: </span>
+            <div>{{booking.provider.name}}</div>
+          </label>
+          <label class="talonInfo">
+            <span>Дата: </span>
+            <div>{{booking.date}}</div>
+          </label>
+          <label class="talonInfo">
+            <span>Время: </span>{{booking.timeslot.time_start}} - {{booking.timeslot.time_end}}</label>
+          <label class="talonInfo">
+            <span>Ворота: </span>
+            <div>{{booking.gate}}</div>
+          </label>
+        </div>
+      </div>
+      <div class="containerInfo3">
+        <img id="map" src="{{ booking.warehouse.image.url }}" alt="Image">
+        <script>
+          function generatePDF() {
+              const element = document.getElementById('invoice');
+              const options = {
+                  margin: 5,
+                  filename: 'OTRADA___{{booking.id}}.pdf',
+                  image: { type: 'jpeg', quality: 0.98 },
+                  html2canvas: { scale: 1 },
+                  jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                  remove: '.bottom-section' // селектор для удаления нижней части
+              };
+
+              html2pdf()
+                  .set(options)
+                  .from(element)
+                  .save();
+          }
+        </script>
+      </div>
+      {% if booking.warehouse.address or booking.warehouse.contact_rc %}
+        <label class="contactInfo">
+          <span>{{ booking.warehouse.address}}</span>
+          <span>{{ booking.warehouse.contact_rc}}</span>
+        </label>
+      {% endif %}
+  </div>
+</div>
+
+
+
+{% endblock %}
+  

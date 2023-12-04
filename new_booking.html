@@ -1,0 +1,242 @@
+{% extends 'main/layout.html' %}
+
+{%block title%}
+Апрель
+{%endblock%}
+
+{% block content %}
+
+    {% if user.username%}
+
+    {% load static %}
+
+    <link rel="stylesheet" href="{% static 'main/css/new_booking.css' %}" />
+<div class="containerHeader">
+  <div class="layoutHeader">
+    <div class="pageInfo">
+      <i class="fa-brands fa-wpforms"></i>
+      <h2>Новая бронь</h2>
+    </div>
+    <div class="containerWelcome">
+      <div class="buttonContainerMenu">
+        <button class="profile">
+          <a  href="{% url 'logout' %}?next=/timeslots/">
+          Выйти
+          </a>
+        </button>
+        <button class="btnMenu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Форма -->
+
+<div class="box-inner">
+<div class="formWrapper">
+  <span class="textInfoForm">Заполните форму представленную ниже, для бронирования времени прибытия транспорта в РЦ.</span>
+  <script>
+    const validateForm = () => {
+      const provider = document.querySelector('#provider_select_chosen span')
+      const ArrivalDate = document.querySelector('#date-slot')
+      const timeSlot = document.querySelector('#time-slot_select')
+      const volume = document.querySelector('#volume')
+      const listCheckInput = [provider, ArrivalDate, timeSlot, volume]
+      const result = listCheckInput.some(item => item.length > 0);
+      
+      if(result === true) return true;
+      
+      alert("Не все поля заполнены!!")
+      return false;
+    }
+  </script>
+  <form  class="forms" method="post" action="{% url 'talon' %}" onsubmit="return validateForm()">
+    {%csrf_token%}
+      {{ form.my_choice }}
+  
+  <!-- Выбор поставщика -->
+    <label class="formField" for="provider-select">
+      <i class="fa-solid fa-truck-field"></i>
+      <span>Поставщик</span>
+      <select class="provider" title="Выбор поставщика" size="1" id="provider-select" name="provider">
+        <option disabled selected value></option>
+        {% for p in provider %}
+          {%if user.is_staff%}
+            <option value="{{ p.id }}">{{ p.name }}</option>
+                {%else%}
+            {%if user.customeruser.name == p.name%}
+              <option value="{{ p.id }}">{{ p.name }}</option>
+            {%endif%}
+          {%endif%}
+        {% endfor %}
+        </select> 
+    <link rel="stylesheet" href="https://snipp.ru/cdn/chosen/1.8.7/chosen.min.css">
+    <script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script><script src="https://snipp.ru/cdn/chosen/1.8.7/chosen.jquery.min.js"></script>
+    <script>
+              $(document).ready(function(){
+                $('.provider').chosen({
+                width: '100%',
+                no_results_text: 'Совпадений не найдено',
+                placeholder_text_single: ' '
+        });
+    });
+    </script>
+    </label>
+
+  
+  <!--end-->
+  <label class="formField" for="volume">
+    <i class="fa-solid fa-truck" ></i>
+    <span>Объем в м³</span>
+
+      <input required class="cselect" type="number" title="Выбор операции"  id="volume" name="volume">
+
+  </label>
+
+
+  <!-- Выбор типа операции -->
+  
+  <label class="formField" for="procedure-select">
+    <i class="fa-solid fa-truck" ></i>
+    <span>Тип операции</span>
+    <div class="wrapperSelect">
+      <select class="cselect" title="Выбор операции" size="1" id="procedure-select" name="procedure_type">
+    
+          {% for key, value in procedure_dict.items %}
+            <option class="optionStyle" style="height:35px;" value="{{ key }}">{{value}}</option>
+          {% endfor %}
+      </select> 
+    </div>
+  </label>
+  
+  <!--end-->
+  
+  <!-- Выбор ТС -->
+  {% if user.customeruser.role != 'user' and user.customeruser.role != 'dispecher'%}
+  <label class="formField" for="user-select">
+    <i class="fa-solid fa-truck" ></i>
+    <span>Тип ТС</span>
+    <div class="wrapperSelect">
+      <select size="1" id="vehicle-select" name="vehicle_type">
+        {% for key, value in vehicle_types_dict.items %}
+          <option style="height:35px;" value="{{ key }}">{{value}}</option>
+        {% endfor %}
+      </select> 
+    </div>
+  </label>
+  
+  {%endif%}
+  <!-- end -->
+  
+  <!-- Выбор склада -->
+  
+  <label class="formField" for="warehouse-select">
+    <i class="fa-solid fa-warehouse"></i>
+    <span>Склад</span>
+    <select class="warehouse" title="Выбор склада" size="1" id="warehouse-select" name="warehouse">
+      {% for w in warehouse %}
+        {% if user.customeruser.role == 'admin' or user.customeruser.role == 'menedger' or user.customeruser.role == 'user' %}
+          <option style="height:35px;" value="{{ w.id }}">{{ w.name }}</option>
+        {%elif user.customeruser.warehouse.name == w.name%}
+          <option style="height:35px;" value="{{ w.id }}">{{ w.name }}</option>
+        {%endif%}
+      {% endfor %}
+    </select>
+  </label>
+
+  <link rel="stylesheet" href="https://snipp.ru/cdn/chosen/1.8.7/chosen.min.css">
+  <script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://snipp.ru/cdn/chosen/1.8.7/chosen.jquery.min.js"></script>
+  
+  <script>
+  $(document).ready(function(){
+    $('.warehouse').chosen({
+    width: '100%',
+      no_results_text: 'Совпадений не найдено',
+    placeholder_text_single: 'Выберите РЦ'
+      });});
+  </script> 
+  
+  <!--end-->
+  
+  <!-- Выбор даты -->
+  
+  <label class="formField" for="date-slot">
+    <i class="fa-solid fa-calendar-days"></i>
+    <span>Дата прибытия ТС</span>
+    <input placeholder="01.01.2000" id="date-slot" name="date" type="date"> 
+  </label>
+  
+  <!--end-->
+  
+  <!-- Выбор Таймслота -->
+  
+  <label class="formField" for="time-slot_select">
+    <i class="fa-solid fa-clock"></i>
+    <span>Тайм слот</span>
+    <div class="wrapperSelect">
+      <select size="1" id="time-slot_select" name="timeslot"></select>
+    </div>
+  </label>
+
+  <script>
+      function azaza() {
+      if ($('#date-slot').val() && $('#warehouse-select').val() ) {
+      $.ajax({
+          type: "POST",
+                  url: "{% url 'processing' %}",
+                  data: 	{
+                  'csrfmiddlewaretoken': '{{ csrf_token }}',
+                  'date': $('#date-slot').val(), // from form
+                  'warehouse': $('#warehouse-select').val(), // from form
+                  'vehicle_type': $('#vehicle-select').val(), // from form
+              },
+          success: function (data) {
+                  let json = $.parseJSON(data);
+                  $('#time-slot_select').empty();
+                  for (let i in json.slots)
+            $('#time-slot_select').append('<option value=' + json.slots[i] + '>' + json.slots[i] + '</option>');
+                      },
+          error: function (response) {
+            alert('Неверно');
+                        }
+                        });
+                      return false;
+                  }
+              }
+  
+                  $('#date-slot').blur(function () {
+                      azaza();
+                  });
+  
+                  $('#warehouse-select').blur(function () {
+                      azaza();
+                  });
+  
+                  $('#vehicle-select').blur(function () {
+                      azaza();
+                  });
+  </script> 
+
+  <!--end-->
+  
+  <!-- Кнопка брони -->
+   <button id="submitNewBooking" class="submitButton"><input  onclick="showMessage()"  type="submit" value="Талон на въезд"></button>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.15/dist/sweetalert2.min.css">
+  
+  <!-- Подключение библиотеки SweetAlert -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.15/dist/sweetalert2.min.js"></script>
+  </form>
+</div>
+</div>
+
+{%else%}
+<div class="containerBlockAuth">
+  <span>Доступ запрещен. Для открытия данной страницы, свяжитесь с Вашим менеджером.</span>
+  <a href="{% url 'login'  %}" class="submitButton">Войти</a>
+</div>
+{%endif%}
+
+
+{% endblock %}

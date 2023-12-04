@@ -1,0 +1,84 @@
+{% extends 'main/layout.html' %}
+
+{%block title%}
+Панель сотрудника
+{%endblock%}
+{%block content%}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/kpp.css' %}" />
+<div class="containerHeader">
+  <div class="layoutHeader">
+    <div class="pageInfo">
+      <i class="fa-brands fa-wpforms"></i>
+      <h2>КПП</h2>
+    </div>
+    <div class="containerWelcome">
+      <div class="buttonContainerMenu">
+        <button class="profile">
+          <a  href="{% url 'logout' %}?next=/timeslots/">
+          Выйти
+          </a>
+        </button>
+        <button class="btnMenu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="containerWrapper">
+  {%for b in booking%}
+    {% if b.date == dt_now%}
+        {% if user.customeruser.warehouse == b.warehouse %}
+
+
+    <div class="containerItemWrapper"> 
+      <div class="containerItem">
+          <div class="formField">
+            <span>Дата:</span> 
+            <span>{{b.date}}</span>
+          </div>
+          <div class="formField">
+            <span>Склад:</span> 
+            <span>{{b.warehouse}}</span> 
+          </div>
+          <div class="formField">
+            <span>Ворота:</span> 
+            <span>{{b.gate}}</span> 
+          </div>
+          <div class="formField">
+            <span>Тайм слот:</span> 
+            <span>{{b.timeslot}}</span> 
+          </div>
+          <div class="formField">
+            <span>Поставщик:</span> 
+            <span>{{b.provider.name}}</span> 
+          </div>
+          <div class="containerCompleted">
+              {% if b.pick_begin|date:'Y-m-d H:i:s' != '2022-01-01 00:00:00' and b.pick_end|date:'Y-m-d H:i:s' != '2022-01-01 00:00:00' %}
+                <div class="orderCompleted">Заказ завершен</div>
+              {% else %}
+                <div class="buttonContainerForm">
+                  <form method="post" action="{% url 'update_pick_begin' b.id %}">
+                    {% csrf_token %}
+                    <button class="submitButton" type="submit" {% if b.pick_begin|date:'Y-m-d H:i:s' != '2022-01-01 00:00:00' %}disabled{% endif %}>Въезд на территорию</button>
+                  </form>
+                  <form method="post" action="{% url 'update_pick_end' b.id %}">
+                    {% csrf_token %}
+                    <button class="submitButton" type="submit" {% if b.pick_end|date:'Y-m-d H:i:s' != '2022-01-01 00:00:00' %}disabled{% endif %}>Выезд с территории</button>
+                  </form>
+                </div>
+              {% endif %}
+          </div>
+      </div>
+    </div>
+    {%endif%}
+    {%endif%}
+  {%endfor%}
+  {% comment %} <div>Выездов за сегодня еще нет</div> {% endcomment %}
+</div>
+<p class="selectedDateText">{{dt_now}}</p>
+
+
+{%endblock%}

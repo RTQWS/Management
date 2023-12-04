@@ -1,0 +1,209 @@
+{% extends 'main/layout.html' %}
+
+{%block title%}
+Панель сотрудника
+{%endblock%}
+{%block content%}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/change_booking.css' %}" />
+
+{% if user.is_staff %}
+<div class="containerHeader positionSticky">
+	<div class="layoutHeader">
+		<div class="pageInfo">
+			<i class="fa-brands fa-wpforms"></i>
+			<h2>Редактировать бронь</h2>
+		</div>
+		{% comment %} <div class="buttonWrapper">
+			{% if user.is_staff and user.customeruser.role == 'priemka' or user.customeruser.role == 'dispecher' %}
+			<input class="main-box-btn" type="button" onclick="location.href='{% url 'logout' %}?next=/timeslots'" value="Выход"/>
+			{%endif%}
+			<button class="btnMenu">
+				<i class="fa-solid fa-bars"></i>
+			</button> 
+		</div> {% endcomment %}
+		<div class="containerWelcome">
+			<div class="buttonContainerMenu">
+				<button class="profile">
+					<a  href="{% url 'logout' %}?next=/timeslots/">
+					Выйти
+					</a>
+				</button>
+				<button class="btnMenu">
+					<i class="fa-solid fa-bars"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+	
+	<form class="selectionForm" method="POST" onload="SetDate();">
+	{% csrf_token %}
+
+		<input type="date" id="myDate" class="selected_my_date" name="my_date" value= "{{dt_now}}" >
+
+		<script type="text/javascript">
+		function SetDate(){
+		var date = new Date();
+		var day = date.getDate();var month = date.getMonth() + 1;
+		var year = date.getFullYear();
+		if (month < 10) month = "0" + month;if (day < 10) day = "0" + day;
+		var today = year + "-" + month + "-" + day;
+		document.getElementById('myDate').value = today;}
+		</script>
+
+		<body onload="SetDate();"></body>
+		<input type="submit" class="submitButton" value="Ок">
+	</form>
+</div>
+     <table class="table table-bottom">
+            <thead>
+                <tr>
+                    <th>
+						<span>
+							Пользователь
+						</span>
+					</th>
+                    <th>
+						<span>
+							Дата
+						</span>
+					</th>
+                    <th>
+						<span>
+							Склад
+						</span>
+					</th>
+                    <th>
+						<span>
+							Ворота
+						</span>
+					</th>
+                    <th>
+						<span>
+							Тайм слот
+						</span>
+					</th>
+                    <th>
+						<span>
+							Поставщик
+						</span>
+					</th>
+                    <th>
+						<span>
+							Прибытие
+						</span>
+					</th>
+
+                    {%if user.customeruser.role == "menedger"  %}
+						<th>Редактирование для менеджеров</th>
+					{%else%}
+						{%if user.customeruser.role == "priemka"  %}
+							<th>Редактирование для приемки </th>
+						{%else%}
+							{%if user.customeruser.role == "admin" or user.customeruser.role == "dispecher" %}
+								<th>Редактирование брони</th>
+								<th>Редактирование прибытия ТС</th>
+								<th>Удалить бронь</th>
+							{%endif%}
+						{%endif%}
+					{%endif%}
+                </tr>
+	        </thead>
+    {%for b in booking%}
+            {%if  date_object ==  b.date%}
+				{% if user.customeruser.warehouse == b.warehouse%}
+            <tbody>
+                <tr>
+                    <td>{{b.user}}</td>
+                    <td>{{b.date}}</td>
+                    <td>{{b.warehouse}}</td>
+                    <td>{{b.gate}}</td>
+                    <td>{{b.timeslot}}</td>
+                    <td>{{b.provider.name}}</td>
+                    <td> {% if b.pick_gate == b.pick_begin %}
+								-
+						{%else%}
+								{{b.pick_gate}}
+						 {%endif%}</td>
+					{% if user.customeruser.role == 'admin' or user.customeruser.role == "dispecher"%}
+						<td><a class="redact"  href="{% url 'change_booking_update' b.id%}" ><i class="fa-solid fa-pencil"></i></a></td>
+						<td><a class="redact" href="{% url 'reception_update' b.id%}" ><i class="fa-solid fa-pencil"></i></a></td>
+						<td><a class="redact" href="{% url 'change_booking_delete' b.id%}" ><i class="fa-regular fa-circle-xmark delete"></i></a></td>
+					{% elif user.customeruser.role == 'menedger' %}
+						<td><a class="redact"  href="{% url 'change_booking_update' b.id%}" ><i class="fa-solid fa-pencil"></i></a></td>
+					{% elif user.customeruser.role == 'priemka' %}
+						<td><a class="redact" href="{% url 'reception_update' b.id%}" ><i class="fa-solid fa-pencil"></i></a></td>
+					{%endif%}
+
+                </tr>
+            </tbody>
+
+
+
+
+                   </div>
+
+				{%elif user.customeruser.role == 'admin' or user.customeruser.role == 'menedger' %}
+					<tbody>
+                <tr>
+                    <td>{{b.user}}</td>
+                    <td>{{b.date}}</td>
+                    <td>{{b.warehouse}}</td>
+                    <td>{{b.gate}}</td>
+                    <td>{{b.timeslot}}</td>
+                    <td>{{b.provider.name}}</td>
+                    <td> {% if b.pick_gate == b.pick_begin %}
+								-
+						{%else%}
+								{{b.pick_gate}}
+						 {%endif%}</td>
+					{% if user.customeruser.role == 'admin' or user.customeruser.role == "dispecher"%}
+						<td><a class="redact"  href="{% url 'change_booking_update' b.id%}" ><i class="fa-solid fa-pencil"></i></a></td>
+						<td><a href="{% url 'reception_update' b.id%}" ><i class="fa-solid fa-pencil"></i></a></td>
+						<td><a href="{% url 'change_booking_delete' b.id%}" ><i class="fa-regular fa-circle-xmark delete"></i></a></td>
+					{% elif user.customeruser.role == 'menedger' %}
+						<td><a class="redact"  href="{% url 'change_booking_update' b.id%}" ><i class="fa-solid fa-pencil"></i></a></td>
+					{% elif user.customeruser.role == 'priemka' %}
+						<td><a href="{% url 'reception_update' b.id%}" ><i class="fa-solid fa-pencil"></i></a></td>
+					{%endif%}
+
+                </tr>
+            </tbody>
+				{%endif%}
+        {%endif%}
+    {%endfor%}
+         </table>
+
+                <p class="selectedDateText">Выбранная дата: {{ date_object }} </p>
+{%else%}
+<link rel="stylesheet" href="{% static 'main/css/block_page.css' %}" />
+	<div class="containerHeader positionSticky">
+		<div class="layoutHeader">
+			<div class="pageInfo">
+			<i class="fa-brands fa-wpforms"></i>
+			<h2>Редактировать бронь</h2>
+			</div>
+			<div class="containerWelcome">
+			<span>{{ user.first_name }}</span>
+			<div class="buttonContainerMenu">
+				<button class="profile">
+				<a  href="{% url 'logout' %}?next=/timeslots/">
+					Выйти
+				</a>
+				</button>
+				{% comment %} кнопка меню {% endcomment %}
+				<button class="btnMenu">
+				<i class="fa-solid fa-bars"></i>
+				</button>
+			</div>
+			</div>
+		</div>
+		</div>
+	<div class="containerBlock">
+		<span>Доступ запрещен. Для открытия данной страницы, свяжитесь с Вашим менеджером.</span>
+	</div>
+
+{%endif%}
+
+{%endblock%}

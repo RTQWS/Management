@@ -1,0 +1,82 @@
+
+{% extends 'main/layout.html' %}
+
+{%block title%}
+Панель сотрудника
+{%endblock%}
+{%block content%}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/change_booking.css' %}" />
+
+<div class="containerHeader positionSticky">
+	<div class="layoutHeader">
+		<div class="pageInfo">
+			<i class="fa-brands fa-wpforms"></i>
+			<h2>Подтвержения</h2>
+		</div>
+		{% comment %} <div class="buttonWrapper">
+			{% if user.is_staff and user.customeruser.role == 'priemka' or user.customeruser.role == 'dispecher' %}
+			<input class="main-box-btn" type="button" onclick="location.href='{% url 'logout' %}?next=/timeslots'" value="Выход"/>
+			{%endif%}
+			<button class="btnMenu">
+				<i class="fa-solid fa-bars"></i>
+			</button>
+		</div> {% endcomment %}
+		<div class="containerWelcome">
+			<div class="buttonContainerMenu">
+				<button class="profile">
+					<a  href="{% url 'logout' %}?next=/timeslots/">
+					Выйти
+					</a>
+				</button>
+				<button class="btnMenu">
+					<i class="fa-solid fa-bars"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% if return_arrival_booking and accepted_entries %}
+    <table class="table table-bottom">
+        <thead>
+            <tr>
+                <th>
+                    <span>Номер перевозки</span>
+                </th>
+                <th>
+                    <span>Адрес</span>
+                </th>
+                <th>
+                    <span>Номер телефона</span>
+                </th>
+                <th>
+                    <span>Тип груза</span>
+                </th>
+                <th>
+                    <span>Объем</span>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rab in return_arrival_booking %}
+                {% if rab.accepted %}
+                    <tr>
+                        <td>{{ rab.number_arrival }}</td>
+                        <td>{{ rab.address }}</td>
+                        <td>{{ rab.phone }}</td>
+                        <td>{{ rab.type_cargo }}</td>
+                        <td>{{ rab.volume_cargo }}</td>
+                        <td>{{ rab.menedger }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+{%else%}
+ <div class="wrapperError">
+		<h5>Записей еще нет или все они не приняты</h5>
+	</div>
+{%endif%}
+{% endblock%}

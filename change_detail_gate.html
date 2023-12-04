@@ -1,0 +1,65 @@
+{% extends 'main/layout.html' %}
+
+{%block title%}
+Редактор броней
+{%endblock%}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/change_detail_gate.css' %}" />
+
+<div class="alertWrapper">
+	<div class="alert">
+	<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+	Внимание! Изменения проведенные вами, могут привести к некорректной работе системы. Будьте внимательны! При отметке ворот неактивными, они исключаются из возможных бронирований/резервирований временных промежутков
+	</div>
+</div>
+<div class="containerHeader">
+	<div class="layoutHeader">
+		<div class="pageInfo">
+			<i class="fa-brands fa-wpforms"></i>
+			<h2>Редактирование ворот</h2>
+		</div>
+		<div class="containerWelcome">
+			<div class="buttonContainerMenu">
+				<button class="profile">
+					<a  href="{% url 'logout' %}?next=/timeslots/">
+					Выйти
+					</a>
+				</button>
+				<button class="btnMenu">
+					<i class="fa-solid fa-bars"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="box-inner">
+	<div class="formWrapper">
+		<form class="forms" method="post">
+			{%csrf_token%}
+			<label class="formField" for="user-select">
+				<i class="fa-solid fa-user icon"></i>
+				<span>Имя: </span>
+				<div>{{form.name}}</div>
+			</label>
+			<div style="display: none">Склад{{form.warehouse}} </div>
+			<label class="formField" for="user-select">
+				<i class="fa-solid fa-truck icon"></i>
+				<span>Тип ворот:</span>
+				<div>{{form.types}}</div>
+			</label>
+			<label class="formField" for="user-select">
+				<i class="fa-solid fa-check icon"></i> 
+				<span>Активность: </span>
+				<div  class="custom-checkbox">
+					{{form.active}}
+					<label for="id_active"></label>
+				</div>
+			</label>
+			<span>{{error}}</span>
+			<button class="submitButton" type="submit">Сохранить</button>
+		</form>
+	</div>
+</div>
+{% endblock %}

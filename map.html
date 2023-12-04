@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+{% load leaflet_tags %}
+
+{% block content %}
+<h1>Карта объектов</h1>
+<div id="map" style="height: 500px;"></div>
+
+{% leaflet_js %}
+{% leaflet_css %}
+
+<script type="text/javascript">
+    var map = L.map('map').setView([51.5074, -0.1278], 12); // Задайте начальные координаты и уровень масштабирования карты
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    {% for warehouse in warehouses %}
+    var marker = L.marker([{{ warehouse.coordinates }}]).addTo(map);
+    marker.bindPopup('<b>{{ warehouse.name }}</b><br>{{ warehouse.contact_menedger }}<br>{{ warehouse.contact_rc }}');
+    {% endfor %}
+</script>
+{% endblock %}

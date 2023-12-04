@@ -1,0 +1,67 @@
+{% extends 'main/layout.html' %}
+
+{%block title%}
+Апрель
+{%endblock%}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/add_gate.css' %}" />
+<div class="containerHeader">
+    <div class="layoutHeader">
+        <div class="pageInfo">
+            <i class="fa-brands fa-wpforms"></i>
+            <h2>Добавление ворот</h2>
+        </div>
+        <div class="containerWelcome">
+            <div class="buttonContainerMenu">
+                <button class="profile">
+                    <a  href="{% url 'logout' %}?next=/timeslots/">
+                    Выйти
+                    </a>
+                </button>
+                <button class="btnMenu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="box-inner">
+    <div class="formWrapper">
+        <form class="forms" method="post" >
+            {% csrf_token %}
+            <label class="formField" for="user-select">
+                <i class="iconProfile fa-solid fa-user fa-lg"></i>
+                <span>Имя</span>
+                <div>{{form.name}}</div>
+            </label>
+            
+            <label class="formField" for="user-select">
+                <i class="fa-solid fa-warehouse"></i> 
+                <span>Склад</span>
+                <div>{{form.warehouse}}</div>
+            </label>
+    
+            <label class="formField" for="user-select">
+                <i class="fa-solid fa-truck"></i> 
+                <span>Тип ворот</span>
+                <div>{{form.types}}</div>
+            </label>
+    
+            
+            <label class="formField" for="user-select">
+                <i class="fa-solid fa-check"></i> 
+                <span>Активность </span>
+                <div class="custom-checkbox">
+                    {{form.active}}
+                    <label for="id_active"></label>
+                </div>
+            </label>
+    
+            <button class="submitButton buttonPadding" >Добавить ворота</button>
+
+        </form>
+    </div>
+</div>
+{% endblock%}

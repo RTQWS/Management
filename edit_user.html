@@ -1,0 +1,56 @@
+{% extends 'main/layout.html' %}
+
+{%block title%}
+Панель сотрудника
+{%endblock%}
+{%block content%}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/edit_user.css' %}" />
+<div class="containerHeader">
+    <div class="layoutHeader">
+        <div class="pageInfo">
+            <i class="fa-brands fa-wpforms"></i>
+            <h2>Редактирование пользователя</h2>
+        </div>
+        <div class="containerWelcome">
+            <div class="buttonContainerMenu">
+                <button class="profile">
+                    <a  href="{% url 'logout' %}?next=/timeslots/">
+                    Выйти
+                    </a>
+                </button>
+                <button class="btnMenu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="box-inner">
+    <div class="formWrapper">
+
+        <form class="forms" method="post">
+            {% csrf_token %}
+            <span class="textInfoForm">Редактирование пользователя <b>{{ user.first_name }}</b></span>
+            
+            <label class="formField" for="first_name">
+                <span>Имя:</span>
+                <input class="formField" type="text" name="first_name" value="{{ user.first_name }}">
+            </label>
+
+            <label class="formField" for="last_name">
+                <span>Фамилия:</span>
+                <input class="formField" type="text" name="last_name"  value="{{ user.last_name }}">
+            </label>
+
+            <label class="formField" for="email">
+                <span>Почта:</span>
+                <input class="formField" type="email" name="email" value="{{ user.email }}">
+            </label>
+
+            <input type="submit" class="submitButton" value="Сохранить изменения">
+        </form>
+    </div>
+</div>
+{%endblock%}

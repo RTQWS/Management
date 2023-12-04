@@ -1,0 +1,115 @@
+{% extends 'main/layout.html' %}
+
+{%block title%}
+Апрель
+{%endblock%}
+
+{% block content %}
+{%if user.is_staff%}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/change_gate.css' %}" />
+<div class="containerHeader positionSticky">
+	<div class="layoutHeader">
+		<div class="pageInfo">
+			<i class="fa-brands fa-wpforms"></i>
+			<h2>Редактировать ворота</h2>
+		</div>
+		<div class="containerWelcome">
+			<div class="buttonContainerMenu">
+				<button class="profile">
+					<a  href="{% url 'logout' %}?next=/timeslots/">
+					Выйти
+					</a>
+				</button>
+				<button class="btnMenu">
+					<i class="fa-solid fa-bars"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+	<div class="buttonWrapper">
+		<a class="submitButton"  href="{% url 'add_gate'%}" >
+			<i class="fa-solid fa-plus"></i>
+			<span>Добавить ворота</span>
+		</a>
+	</div>
+</div>
+
+	<table class="table table-bottom" >
+		<thead>
+			<tr>
+				<th>Название</th>
+				<th>Склад</th>
+				<th>Состояние</th>
+				<th>Редактировать</th>
+				{% if user.customeruser.role == 'admin'%}
+					<th>Удалить</th>
+				{%endif%}
+
+			</tr>
+		</thead>
+{% for g in gate%}
+	{%if user.customeruser.role == 'admin'%}
+		<tbody>
+			<tr>
+				<td>{{g.name}}</td>
+				<td>{{g.warehouse}}</td>
+				{% if g.active == True  %}
+					<td>Активные</td>
+				{%else%}
+					<td>Неактивные</td> 
+				{%endif%}
+					<td> <a class="redact" href="{% url 'gate' g.id%}" ><i class="fa-solid fa-pencil"></i></a></td>
+					{% if user.customeruser.role == 'admin'%}
+						<td> <a class="redact" href="{% url 'change_gate_delete' g.id%}" ><i class="fa-regular fa-circle-xmark delete"></i></a></td>
+				{%endif%}
+	{%else%}
+			{%if user.customeruser.warehouse == g.warehouse%}
+					<tbody>
+			<tr>
+				<td>{{g.name}}</td>
+				<td>{{g.warehouse}}</td>
+				{% if g.active == True  %}
+					<td>Активные</td>
+				{%else%}
+					<td>Неактивные</td> 
+				{%endif%}
+					<td> <a class="redact" href="{% url 'gate' g.id%}" ><i class="fa-solid fa-pencil"></i></a></td>
+					{% if user.customeruser.role == 'admin'%}
+						<td> <a class="redact" href="{% url 'change_gate_delete' g.id%}" ><i class="fa-regular fa-circle-xmark delete"></i></a></td>
+				{%endif%}
+			{%endif%}
+	{%endif%}
+			</tr>
+		</tbody>
+
+{%endfor%}
+		</table>
+{%else%}
+		<link rel="stylesheet" href="{% static 'main/css/block_page.css' %}" />
+		<div class="containerHeader positionSticky">
+			<div class="layoutHeader">
+				<div class="pageInfo">
+					<i class="fa-regular fa-file-lines"></i>
+					<h2>Редактировать ворота</h2>
+				</div>
+				<div class="containerWelcome">
+					<div class="buttonContainerMenu">
+						<button class="profile">
+							<a  href="{% url 'logout' %}?next=/timeslots/">
+							Выйти
+							</a>
+						</button>
+						<button class="btnMenu">
+							<i class="fa-solid fa-bars"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="containerBlock">
+			<span>Доступ запрещен. Для открытия данной страницы, свяжитесь с Вашим менеджером.</span>
+		</div>
+{%endif%}
+{% endblock%}

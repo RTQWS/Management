@@ -1,0 +1,289 @@
+{% extends 'main/layout.html' %}
+
+{%block title%}
+вторая версия сайта
+{%endblock%}
+
+{% block content %}
+
+<form method="POST">
+    {% csrf_token %}
+    <input title="Ввод номера заказа" style="height:35px;border: 3px solid grey;border-radius: 9px;"placeholder="заказ"  name="zakaz" type="text">
+    <input type="submit" style="border-radius: 15px;padding: 3px;margin-left:10px;color: #fff;background: linear-gradient(45deg, #1c38c3, #f0336c);" value="Отправить">
+</form>
+{{delivery.id}}
+{% for del in delivery%}
+{%if user.customeruser == del.user%}
+    <br>{{del.numbers}}<br>
+{%endif%}
+{%endfor%}
+{% for del in delivery%}
+
+    {%if my_date == del.docnumber%}
+
+
+
+<div class="box-inner">
+                   <form  class="forms" method="post" action="{% url 'talon' %}">
+
+                       {%csrf_token%}
+
+                    <label style="padding:3px; color:#fff; border-radius: 9px; background: linear-gradient(45deg, #1c38c3, #f0336c);" for="procedure-select"><i class="fa-solid fa-truck" ></i> Тип операции</label>
+                               <select class="cselect" title="Выбор операции" style="height:35px;border: 3px solid grey;border-radius: 9px;" size="1" id="procedure-select" name="procedure_type">
+                            {% for key, value in procedure_dict.items %}
+                                <option style="height:35px;" value="{{ key }}">{{value}}</option>
+                            {% endfor %}
+
+                       </select>
+                       <br>
+
+                        <label style="padding:3px; color:#fff;border-radius: 9px; background: linear-gradient(45deg, #1c38c3, #f0336c);" for="provider-select"><i class="fa-solid fa-truck-field"></i> Поставщик</label>
+
+                             <select class="provider" title="Выбор поставщика" style="height:35px; border-radius: 9px;border: 3px solid grey;border-radius: 9px;" size="1" id="provider-select" name="provider">
+
+                               {% for p in provider %}
+                                 {% if user.is_staff%}
+                                    {% if p.name == del.provider_name%}
+                                        <option style="height:35px;" value="{{ p.id }}">{{ p.name }}</option>
+                                    {%endif%}
+                                {%endif%}
+                               {% endfor %}
+                           </select>
+
+
+
+
+<link rel="stylesheet" href="https://snipp.ru/cdn/chosen/1.8.7/chosen.min.css">
+<script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://snipp.ru/cdn/chosen/1.8.7/chosen.jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+	$('.provider').chosen({
+		width: '100%',
+		no_results_text: 'Совпадений не найдено',
+		placeholder_text_single: 'Выберите поставщика'
+	});
+});
+</script>
+
+
+                       <br><label  style="padding:3px; color:#fff; border-radius: 9px; background: linear-gradient(45deg, #1c38c3, #f0336c);;" for="date-slot"><i class="fa-solid fa-calendar-days"></i> Дата</label>
+                       <input title="Выбор даты" style="height:35px;border: 3px solid grey;border-radius: 9px;"placeholder="01.01.2000" id="date-slot" name="date" type="date" value="{{date}}" >
+                      <br> <br>
+
+                       <label style="padding:3px; color:#fff;border-radius: 9px; background: linear-gradient(45deg, #1c38c3, #f0336c);" for="warehouse-select"></i> Склад</label>
+                      <select class="warehouse" title="Выбор поставщика" style="height:35px; border-radius: 9px;border: 3px solid grey;border-radius: 9px;" size="1" id="warehouse-select" name="warehouse">
+
+                               {% for w in warehouse %}
+                                    {%if w.name == del.store_name%}
+                                        <option style="height:35px;" value="{{ w.id }}">{{ w.name }}</option>
+                                    {%endif%}
+                               {% endfor %}
+
+                           </select>
+
+
+                       <link rel="stylesheet" href="https://snipp.ru/cdn/chosen/1.8.7/chosen.min.css">
+<script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://snipp.ru/cdn/chosen/1.8.7/chosen.jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+	$('.warehouse').chosen({
+		width: '100%',
+		no_results_text: 'Совпадений не найдено',
+		placeholder_text_single: 'Выберите РЦ'
+	});
+});
+</script>
+
+                       <br>
+                        <br><label style="padding:3px; color:#fff; border-radius: 9px; background: linear-gradient(45deg, #1c38c3, #f0336c);" for="time-slot_select"><i class="fa-solid fa-clock"></i>  Тайм слот</label>
+                       <select style="height:35px;border: 3px solid grey;border-radius: 9px;padding: 2px;" size="1" id="time-slot_select" name="timeslot">
+
+                       </select>
+                       <script>
+            function azaza() {
+                if ($('#date-slot').val() && $('#warehouse-select').val() ) {
+                    $.ajax({
+                          type: "POST",
+                          url: "{% url 'processing' %}",
+                          data: {
+                            'csrfmiddlewaretoken': '{{ csrf_token }}',
+                            'date': $('#date-slot').val(), // from form
+                            'warehouse': $('#warehouse-select').val(), // from form
+                            'vehicle_type': $('#vehicle-select').val(), // from form
+                          },
+                          success: function (data) {
+                              let json = $.parseJSON(data);
+                              $('#time-slot_select').empty();
+                              for (let i in json.slots)
+                                  $('#time-slot_select').append('<option value=' + json.slots[i] + '>' + json.slots[i] + '</option>');
+                          },
+                          error: function (response) {
+                              alert('Неверно');
+                          }
+                        });
+                    return false;
+                }
+            }
+
+                $('#date-slot').blur(function () {
+                    azaza();
+                });
+
+                $('#warehouse-select').blur(function () {
+                    azaza();
+                });
+
+                $('#vehicle-select').blur(function () {
+                    azaza();
+                });
+        </script>
+
+        {%if  del.volume > 80  and del.volume < 160  %}
+                       <br>
+                        <br><label style="padding:3px; color:#fff; border-radius: 9px; background: linear-gradient(45deg, #1c38c3, #f0336c);" for="time-slot_select"><i class="fa-solid fa-clock"></i>  Тайм слот</label>
+                       <select style="height:35px;border: 3px solid grey;border-radius: 9px;padding: 2px;" size="1" id="time2-slot_select" name="timeslot2">
+
+                       </select>
+                       <script>
+                        function azaza2() {
+                            if ($('#date-slot').val() && $('#warehouse-select').val() ) {
+                                $.ajax({
+                                      type: "POST",
+                                      url: "{% url 'processing' %}",
+                                      data: {
+                                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                                        'date': $('#date-slot').val(), // from form
+                                        'warehouse': $('#warehouse-select').val(), // from form
+                                        'vehicle_type': $('#vehicle-select').val(), // from form
+                                      },
+                                      success: function (data) {
+                                          let json = $.parseJSON(data);
+                                          $('#time2-slot_select').empty();
+                                          for (let i in json.slots)
+                                              $('#time2-slot_select').append('<option value=' + json.slots[i] + '>' + json.slots[i] + '</option>');
+                                      },
+                                      error: function (response) {
+                                          alert('Неверно');
+                                      }
+                                    });
+                                return false;
+                            }
+                        }
+                            $('#date-slot').blur(function () {
+                                azaza2();
+                            });
+                            $('#warehouse-select').blur(function () {
+                                azaza2();
+                            });
+                            $('#vehicle-select').blur(function () {
+                                azaza2();
+                            });
+                        </script>
+
+        {%elif  del.volume > 160  or  del.weight_gross > 40 %}
+                        <br>
+                        <br><label style="padding:3px; color:#fff; border-radius: 9px; background: linear-gradient(45deg, #1c38c3, #f0336c);" for="time-slot_select"><i class="fa-solid fa-clock"></i>  Тайм слот</label>
+                       <select style="height:35px;border: 3px solid grey;border-radius: 9px;padding: 2px;" size="1" id="time2-slot_select" name="timeslot2">
+
+                       </select>
+                       <script>
+                        function azaza2() {
+                            if ($('#date-slot').val() && $('#warehouse-select').val() ) {
+                                $.ajax({
+                                      type: "POST",
+                                      url: "{% url 'processing' %}",
+                                      data: {
+                                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                                        'date': $('#date-slot').val(), // from form
+                                        'warehouse': $('#warehouse-select').val(), // from form
+                                        'vehicle_type': $('#vehicle-select').val(), // from form
+                                      },
+                                      success: function (data) {
+                                          let json = $.parseJSON(data);
+                                          $('#time2-slot_select').empty();
+                                          for (let i in json.slots)
+                                              $('#time2-slot_select').append('<option value=' + json.slots[i] + '>' + json.slots[i] + '</option>');
+                                      },
+                                      error: function (response) {
+                                          alert('Неверно');
+                                      }
+                                    });
+                                return false;
+                            }
+                        }
+                            $('#date-slot').blur(function () {
+                                azaza2();
+                            });
+                            $('#warehouse-select').blur(function () {
+                                azaza2();
+                            });
+                            $('#vehicle-select').blur(function () {
+                                azaza2();
+                            });
+                        </script>
+
+                       <br>
+                        <br><label style="padding:3px; color:#fff; border-radius: 9px; background: linear-gradient(45deg, #1c38c3, #f0336c);" for="time3-slot_select"><i class="fa-solid fa-clock"></i>  Тайм слот</label>
+                       <select style="height:35px;border: 3px solid grey;border-radius: 9px;padding: 2px;" size="1" id="time3-slot_select" name="timeslot3">
+
+                       </select>
+                                 <script>
+                            function azaza3() {
+                                if ($('#date-slot').val() && $('#warehouse-select').val() ) {
+                                    $.ajax({
+                                          type: "POST",
+                                          url: "{% url 'processing' %}",
+                                          data: {
+                                            'csrfmiddlewaretoken': '{{ csrf_token }}',
+                                            'date': $('#date-slot').val(), // from form
+                                            'warehouse': $('#warehouse-select').val(), // from form
+                                            'vehicle_type': $('#vehicle-select').val(), // from form
+                                          },
+                                          success: function (data) {
+                                              let json = $.parseJSON(data);
+                                              $('#time3-slot_select').empty();
+                                              for (let i in json.slots)
+                                                  $('#time3-slot_select').append('<option value=' + json.slots[i] + '>' + json.slots[i] + '</option>');
+                                          },
+                                          error: function (response) {
+                                              alert('Неверно');
+                                          }
+                                        });
+                                    return false;
+                                }
+                            }
+                                $('#date-slot').blur(function () {
+                                    azaza3();
+                                });
+                                $('#warehouse-select').blur(function () {
+                                    azaza3();
+                                });
+                                $('#vehicle-select').blur(function () {
+                                    azaza3();
+                                });
+                        </script>
+        {%endif%}
+
+
+
+
+
+
+
+                   <br>
+                 <input class="talonsub" onclick="showMessage()" type="submit" value="Талон на въезд">
+                <script>
+                    function showMessage() {
+                          alert("Успешно забронированно!");
+                        }
+                </script>
+               </form>
+
+    {%endif%}
+    {%endfor%}
+</div>
+
+<p style="margin-left:20px;">Выбранный заказ: {{ my_date }} </p>
+{% endblock %}

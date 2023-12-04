@@ -1,0 +1,135 @@
+
+{% extends 'main/layout.html' %}
+
+{%block title%}
+	Панель сотрудника
+{%endblock%}
+
+{%block content%}
+
+	{% load static %}
+	<link rel="stylesheet" href="{% static 'main/css/change_booking.css' %}" />
+	<link rel="stylesheet" href="{% static 'main/css/shipment_accept.css' %}" />
+
+	<div class="containerHeader positionSticky">
+		<div class="layoutHeader">
+			<div class="pageInfo">
+				<i class="fa-brands fa-wpforms"></i>
+				<h2>Подтвержения</h2>
+			</div>
+			{% comment %} <div class="buttonWrapper">
+				{% if user.is_staff and user.customeruser.role == 'priemka' or user.customeruser.role == 'dispecher' %}
+				<input class="main-box-btn" type="button" onclick="location.href='{% url 'logout' %}?next=/timeslots'" value="Выход"/>
+				{%endif%}
+				<button class="btnMenu">
+					<i class="fa-solid fa-bars"></i>
+				</button>
+			</div> {% endcomment %}
+			<div class="containerWelcome">
+				<div class="buttonContainerMenu">
+					<button class="profile">
+						<a  href="{% url 'logout' %}?next=/timeslots/">
+						Выйти
+						</a>
+					</button>
+					<button class="btnMenu">
+						<i class="fa-solid fa-bars"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% if return_arrival_booking and accepted_entries%}
+	<table class="table table-bottom">
+				<thead>
+					<tr>
+						<th>
+							<span>
+								Номер перевозки
+							</span>
+						</th>
+						<th>
+							<span>
+								Адрес
+							</span>
+						</th>
+						<th>
+							<span>
+								Номер телефона
+							</span>
+						</th>
+						<th>
+							<span>
+								Тип груза
+							</span>
+						</th>
+						<th>
+							<span>
+								Объем
+							</span>
+						</th>
+						<th>
+							<span>
+								Забронировать
+							</span>
+						</th>
+						<th>
+							<span>
+								Отменить
+							</span>
+						</th>
+
+					</tr>
+				</thead>
+		{% for rab in return_arrival_booking%}
+			{% if rab.accepted == False %}
+				<tbody>
+					<tr>
+						<td>{{rab.number_arrival}}</td>
+						<td>{{rab.address}}</td>
+						<td>{{rab.phone}}</td>
+						<td>{{rab.type_cargo}}</td>
+						<td>{{rab.volume_cargo}}</td>
+
+						<td>
+							<script>
+								function handleShipmentAction(message) {
+									console.log(message);
+									result = confirm(message);
+									return result;
+								}
+							</script>
+							<form  onsubmit="return handleShipmentAction('Забронировать?')" method="POST" action="{% url 'change_accepted' rab.id %}" >
+								{% csrf_token %}
+								<input type="hidden" name="number_arrival" value="{{ rab.number_arrival }}">
+								<input type="hidden" name="user" value="{{ request.user.first_name }}">
+								<div class="containerInputShipment">
+									<button class="redact" type="submit" name="confirm" value="confirm">
+										<i class="fa-solid fa-check"></i>
+									</button>
+								</div>
+							</form>
+						</td>
+						<td>
+							<form onsubmit="return handleShipmentAction('Отменить?')" method="POST" action="{% url 'change_accepted' rab.id %}">
+							{% csrf_token %}
+								<input type="hidden" name="number_arrival" value="{{ rab.number_arrival }}">
+								<div class="containerInputShipment">
+									<button class="redact" type="submit" name="cancel" value="cancel">
+										<i class="fa-solid fa-ban delete"></i>
+									</button>
+								</div>
+							</form>
+						</td>
+				</tbody>
+			{%endif%}
+		{%endfor%}
+	</table>
+	{% else %}
+    <div class="wrapperError">
+		<h5>Записей еще нет или все они приняты.</h5>
+	</div>
+		
+{% endif %}
+
+{% endblock%}

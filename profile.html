@@ -1,0 +1,102 @@
+{% extends 'main/layout.html' %}
+
+
+{%block title%}
+Апрель
+{%endblock%}
+
+{% block content %}
+{{ user.cutomeruser.phone}}
+{% if user.customeruser.role == 'priemka'%}
+	<meta http-equiv="Refresh" content="0.001; URL='change_booking'">
+	
+{%endif%}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/profile.css' %}" />
+
+
+<div class="alertWrapper">
+    <div class="alert">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">×</span>
+        Добрый день, {{ user.first_name }} {{ user.last_name }} данный сайт создан для автоматизации и минимизации задержек при разгрузке поставщиков. Пожалуйста, забронируйте разгрузку самостоятельно или обратитесь к оператору.
+    </div>
+</div>
+<div class="containerHeader">
+    <div class="layoutHeader">
+        <div class="pageInfo">
+            <i class="fa-brands fa-wpforms"></i>
+            <h2>Профиль</h2>
+        </div>
+        <div class="containerWelcome">
+            <div class="buttonContainerMenu">
+                <button class="profile">
+                    <a  href="{% url 'logout' %}?next=/timeslots/">
+                    Выйти
+                    </a>
+                </button>
+                <button class="btnMenu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<section id="about">
+    <div class="containerWrapper">
+        <div class="containerInfo">
+            <div class="imageWrapper">
+                <img class="userPhoto" src="{% static 'main/img/prof.png' %}"> 
+            </div>
+            <div class="userInfo">
+                <span class="fullName">{{ user.first_name }} {{ user.last_name }}</span>
+                <div class="userInfoList">
+                    <div class="userInfoItem">
+                        <span>Логин:</span>
+                        <span>{{user}}</span>
+                    </div>
+                    <div class="userInfoItem">
+                        <span>Фирма:</span>
+                        <span>{{user.customeruser.name}}</span>
+                    </div>            
+                    <div class="userInfoItem">
+                        <span>Почта:</span>
+                        <span>{{user.email}}</span>
+                    </div>
+                    <div class="userInfoItem">
+                        <span>Телефон:</span>
+                        <span>{{ user.customeruser.phone}}</span>
+                    </div>
+                    <div class="userInfoItem">
+                        <span>Skype:</span>
+                        <span>{{user.email}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="containerStats">
+            <div class="statItem">
+                <span data-to="500" data-speed="500">{{booking_count}}</span>
+                <span>Созданных бронирований</span>
+            </div>
+            <div class="statItem">
+                <span data-to="150" data-speed="150">{{count_user_success}}</span>
+                <span>Прибывшие вовремя</span>
+            </div>
+            <div class="statItem">
+                <span data-to="190" data-speed="190">  {{count_user_fail}}</span>
+                <span>Опоздавшие / не прибывшие</span>
+            </div>
+            <div class="statItem">
+                <span data-to="850" data-speed="850">{{percentage_booking}}%</span>
+                <span>Прибывшие вовремя</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+{% endblock %}

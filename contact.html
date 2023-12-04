@@ -1,0 +1,62 @@
+{% extends 'main/layout.html' %}
+
+{%block title%}
+Апрель
+{%endblock%}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/contact.css' %}" />
+<div class="containerHeader positionSticky">
+	<div class="layoutHeader">
+		<div class="pageInfo">
+			<i class="fa-regular fa-file-lines"></i>
+			<h2>Контакты</h2>
+		</div>
+		<div class="containerWelcome">
+			<div class="buttonContainerMenu">
+				<button class="profile">
+					<a  href="{% url 'logout' %}?next=/timeslots/">
+					Выйти
+					</a>
+				</button>
+				<button class="btnMenu">
+					<i class="fa-solid fa-bars"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="containerWrapper">
+	{% for w in warehouse %}
+	<div class="containerItemWrapper">
+		<div class="containerItem">
+			<div class="containerItemInfo">
+				<span>
+					{{w.name}}
+				</span>
+				<span>
+					{{w.address}}
+				</span>
+			</div>
+<!--			https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A17354e2b9e2a01c2e3e87c7b0edae7476867cc98e92acf5c661c18a028ebeea5/-->
+<!--				https://yandex.ru/maps/35/krasnodar/?from=mapframe&ll=39.120474%2C45.114646&mode=usermaps&source=mapframe&um=constructor%3A17354e2b9e2a01c2e3e87c7b0edae7476867cc98e92acf5c661c18a028ebeea5&utm_source=mapframe&z=15-->
+			<div class="map">
+				<span>
+					Менеджер АС «Апрель: {{w.contact_menedger}}
+				</span>
+				{% if w.href_script %}
+					<script type="text/javascript" charset="utf-8" async  src="{{w.href_script}}&amp; &amp;height= 300&amp;lang=ru_RU&amp;scroll=true" > </script>
+				{%else%}
+					<img class="mapDefault" style="background-image: url({% static 'main/img/defaultMap.jpg' %});" src="" alt=""/>
+				{%endif%}
+				<a {% if w.href_script %} class="submitButton" {% else %} class="submitButtonDisabled" {% endif %} {% if w.href_script %} href={{w.href_map}} {%else%} disabled {%endif%} >Ссылка</a>
+			</div>
+		</div>
+	</div>
+	{%endfor%}
+</div>
+
+
+{% endblock%}

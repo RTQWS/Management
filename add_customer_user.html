@@ -1,0 +1,76 @@
+{% extends 'main/layout.html' %}
+{%block title%}
+Панель админа
+{%endblock%}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/add_customer_user.css' %}" />
+<div class="containerHeader">
+    <div class="layoutHeader">
+        <div class="pageInfo">
+            <i class="fa-brands fa-wpforms"></i>
+            <h2>Добавление нового пользователя</h2>
+        </div>
+        <div class="containerWelcome">
+            <div class="buttonContainerMenu">
+                <button class="profile">
+                    <a  href="{% url 'logout' %}?next=/timeslots/">
+                    Выйти
+                    </a>
+                </button>
+                <button class="btnMenu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="box-inner">
+    <div class="formWrapper">
+        <form class="forms" action="{% url 'add_customer_user' %}" method="post"> 
+        {% csrf_token %}
+            <label class="formField" for="username">
+                <span>Имя пользователя:</span>
+                <input type="text" name="username" id="username" required>     
+            </label>
+            
+            <label class="formField" for="password">
+                <span>Пароль:</span>
+                <input type="password" name="password" id="password" required>  
+            </label>   
+
+            <label class="formField" for="name">
+                <span>Название компании:</span>
+                <input type="text" name="name" id="name" required>      
+            </label>
+                
+            <label class="formField" for="phone">
+                <span>Телефон:</span>
+                <input type="text" name="phone" id="phone" required>  
+            </label>    
+            
+            <label class="formField" for="role">
+                <span>Роль:</span>
+                <div>
+                    <select name="role" id="role" required>      
+                        {% for choice in role_choices %}
+                            <option value="{{ choice }}">{{ choice }}</option>       
+                            {% endfor %}
+                            
+                    </select>    
+                </div>
+            </label>
+              
+            <label class="formField" for="warehouse">
+                <span>Склад:</span>
+                <select name="warehouse" id="warehouse" required>
+                    {% for warehouse in warehouses %}       
+                        <option value="{{ warehouse.pk }}">{{ warehouse.name }}</option>
+                    {% endfor %}   
+                </select>  
+            </label> 
+            <input class="submitButton" type="submit" value="Добавить пользователя">
+        </form>
+    </div>
+</div>
+{% endblock %}

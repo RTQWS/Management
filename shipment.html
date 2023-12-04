@@ -1,0 +1,119 @@
+{% extends 'main/layout.html' %}
+
+{%block title%}
+Панель сотрудника
+{%endblock%}
+{%block content%}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/change_booking.css' %}"/>
+
+<div class="containerHeader positionSticky">
+    <div class="layoutHeader">
+        <div class="pageInfo">
+            <i class="fa-brands fa-wpforms"></i>
+            <h2>Обратные рейсы</h2>
+        </div>
+        {% comment %}
+        <div class="buttonWrapper">
+            {% if user.is_staff and user.customeruser.role == 'priemka' or user.customeruser.role == 'dispecher' %}
+            <input class="main-box-btn" type="button" onclick="location.href='{% url 'logout' %}?next=/timeslots'"
+                   value="Выход"/>
+            {%endif%}
+            <button class="btnMenu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+        {% endcomment %}
+        <div class="containerWelcome">
+            <div class="buttonContainerMenu">
+                <button class="profile">
+                    <a href="{% url 'logout' %}?next=/timeslots/">
+                        Выйти
+                    </a>
+                </button>
+                <button class="btnMenu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% if shipment %}
+<table class="table table-bottom">
+    <thead>
+    <tr>
+        <th>
+						<span>
+							Откуда
+						</span>
+        </th>
+        <th>
+						<span>
+							Куда
+						</span>
+        </th>
+        <th>
+						<span>
+							Объем
+						</span>
+        </th>
+        <th>
+						<span>
+							Водитель
+						</span>
+        </th>
+        <th>
+						<span>
+							Номер авто
+						</span>
+        </th>
+        <th>
+						<span>
+							Наименование авто
+						</span>
+        </th>
+        <th>
+						<span>
+							Прибытие в точку Б
+						</span>
+        </th>
+        <th>
+						<span>
+							Дата возвращения
+						</span>
+        </th>
+        <th>
+						<span>
+
+						</span>
+        </th>
+    </tr>
+    </thead>
+    {% for row in shipment %}
+        {%if row.сurrent_volume != 0%}
+    <tbody>
+    <tr>
+        <td>{{ row.start_point }}</td>
+        <td>{{ row.end_point }}</td>
+        <td>{{ row.сurrent_volume }}</td>
+        <td>{{ row.driver }}</td>
+        <td>{{ row.driver.car.state_number }}</td>
+        <td>{{ row.driver.car.name }}</td>
+        <td>{{ row.arrival_end_point }}</td>
+        <td>{{ row.return_arrival }}</td>
+        <td><a href="{% url 'shipment_details' row.pk %}">Детали</a></td>
+    </tr>
+    </tbody>
+        {%endif%}
+
+    {%endfor%}
+</table>
+{%else%}
+<div class="wrapperError">
+    <h5>Записей еще нет или все они не приняты</h5>
+</div>
+{%endif%}
+
+{% endblock%}
+

@@ -1,0 +1,106 @@
+{% extends 'main/layout.html' %}
+
+{%block title%}
+Панель сотрудника
+{%endblock%}
+{%block content%}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/shipment.css' %}" />
+
+<div class="containerHeader positionSticky">
+    {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger">
+                     <span class="closebtn" onclick="this.parentElement.style.display='none';">×</span>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    <div class="layoutHeader">
+        <div class="pageInfo">
+            <i class="fa-brands fa-wpforms"></i>
+            <h2>Обратные рейсы</h2>
+        </div>
+        {% comment %}
+        <div class="buttonWrapper">
+            {% if user.is_staff and user.customeruser.role == 'priemka' or user.customeruser.role == 'dispecher' %}
+            <input class="main-box-btn" type="button" onclick="location.href='{% url 'logout' %}?next=/timeslots'"
+                   value="Выход"/>
+            {%endif%}
+            <button class="btnMenu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+        {% endcomment %}
+        <div class="containerWelcome">
+            <div class="buttonContainerMenu">
+                <button class="profile">
+                    <a href="{% url 'logout' %}?next=/timeslots/">
+                        Выйти
+                    </a>
+                </button>
+                <button class="btnMenu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="box-inner">
+    <div class="formWrapper">
+        <script>
+            const validateForm = () => {
+                let startLocation = document.querySelector('#start_location')
+                let numberArrival = document.querySelector('#number_arrival')
+                let adress = document.querySelector('#adres')
+                let volume = document.querySelector('#vol')
+                let typeCargo = document.querySelector('#type_cargo')
+                const listCheckInput = [startLocation, numberArrival, adress, volume, typeCargo]
+                const result = listCheckInput.find((input) => input.value === '')
+                
+                if(result === undefined) return true;
+                
+                alert("Не все поля заполнены!!")
+                return false;
+            }
+          </script>
+        {% comment %} <span class="textInfoForm">Изменить детали</span> {% endcomment %}
+        <form class="forms" method="POST" action="" onsubmit="return validateForm()">
+            {% csrf_token %}
+            <label class="formField">
+                <span>Местоположение:</span>
+                <input type="text" name="start_location" id="start_location">
+            </label>
+            <label class="formField">
+                <span>Номер перевозки:</span>
+                <input type="text" name="number_arrival" id="number_arrival" class="number_arrival" value="{{ shipment.id_ship }}">
+            </label>
+            <label class="formField">
+                <span>Адрес перевозки:</span>
+                <input type="text" name="adres" id="adres" class="adres">
+            </label>
+            <label class="formField">
+                <span>Номер телефона:</span>
+                <input type="text" name="phone" id="phone" class="phone">
+            </label>
+            <label class="formField">
+                <span>Объем:</span>
+                <input type="number" name="vol" id="vol" class="vol">
+            </label>
+            <label class="formField">
+                <span>Тип груза:</span>
+                <input type="text" name="type_cargo" id="type_cargo" class="type_cargo">
+            </label>
+
+            <button type="submit" class="submitButton">Отправить</button>
+        </form>
+    </div>
+</div>
+
+
+
+
+{{ flag }}
+
+{% endblock%}

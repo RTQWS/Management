@@ -1,0 +1,89 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}
+Редактор броней
+{% endblock %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/change_booking_update.css' %}" />
+
+<div class="alertWrapper">
+  <div class="alert">
+    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+    Внимание! Изменения, проведенные вами, могут привести к некорректной работе системы. Будьте внимательны!
+  </div>
+</div>
+<div class="containerHeader">
+	<div class="layoutHeader">
+		<div class="pageInfo">
+			<i class="fa-regular fa-file-lines"></i>
+			<h2>Редактирование брони</h2>
+		</div>
+		<div class="containerWelcome">
+			<div class="buttonContainerMenu">
+				<button class="profile">
+					<a  href="{% url 'logout' %}?next=/timeslots/">
+					Выйти
+					</a>
+				</button>
+				<button class="btnMenu">
+					<i class="fa-solid fa-bars"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="box-inner">
+	<div class="formWrapper">
+		<form class="forms" method="post">
+			<div class="containerInfoBooking">
+				{% csrf_token %}
+				{% if user.customeruser.role != 'admin' %}
+		
+				<div style="display:none;">
+					<label class="formField" for="user-select">
+						<i class="icon fa-solid fa-truck"></i>
+						<span>Бронирующий</span>
+						<div>{{ form.user }}</div>
+					</label>
+				</div>
+				{% else %}
+				<label class="formField" for="user-select">
+					<i class="icon fa-solid fa-truck"></i>
+					<span>Бронирующий</span>
+					<div>{{ form.user }}</div>
+				</label>
+				{% endif %}
+				<label class="formField" for="user-select">
+					<i class="icon fa-solid fa-truck"></i>
+					<span>Ожидаемая дата поставки</span>
+					<div>{{ form.date }}</div>
+				</label>
+				<div style="display:none;">
+					<label class="formField" for="user-select">
+						<i class="icon fa-solid fa-truck"></i>
+						<span>Склад</span>
+						<div>{{ form.warehouse }}</div>
+					</label>
+				</div>
+				<label class="formField" for="user-select">
+					<i class="icon fa-solid fa-truck"></i>
+					<span>Ворота</span>
+					<div>{{ form.gate }}</div>
+				</label>
+				<label class="formField" for="user-select">
+					<i class="icon fa-solid fa-truck"></i>
+					<span>Тайм слот</span>
+					<div>{{ form.timeslot }}</div>
+				</label>
+				<span>{{ error }}</span>
+			</div>
+			<div class="buttonContainerForm">
+			<button class="submitButton" type="submit">Редактировать</button>
+			<a class="submitButton" href="{% url 'change_booking_delete' booking.id %}">Удалить</a>
+			</div>
+		</form>
+	</div>
+</div>
+{% endblock %}

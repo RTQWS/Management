@@ -1,0 +1,141 @@
+{% extends 'main/layout.html' %}
+
+{%block title%}
+Апрель
+{%endblock%}
+
+{% block content %}
+<div class="features" xmlns="http://www.w3.org/1999/html">
+
+    {% if user.username%}
+
+        <div class="welcome">
+
+            <h4>  Добро пожаловать , {{ user.first_name }} <i class="fa-solid fa-user"></i>  <a class="logout" href="{% url 'logout' %}?next=/timeslots"><i class="fa-regular fa-circle-xmark" style="color:red;"></i></a> </h4>
+            {% if user.is_staff%}
+            <button class="profile" onclick="location.href='{% url 'change_booking' %}'"><i class="fa-sharp fa-solid fa-pen-to-square"></i>  Редактировать брони</button>
+            {%endif%}
+            <button class="profile" onclick="location.href='{% url 'profile' %}'"><i class="fa-solid fa-address-card"></i> Мой профиль</button>
+
+
+        </div>
+         <p>Заполните форму представленную ниже, для бронирования времени прибытия транспорта в РЦ.</p>
+        
+               <div class="box-inner">
+                   <form  class="forms" method="post" action="{% url 'talon' %}">
+                       {%csrf_token%}
+                       {{ form.my_choice }}
+                       <br>
+                      <label style="padding:3px; color:#fff; border-radius: 9px; background: linear-gradient(45deg, #1c38c3, #f0336c);" for="user-select"><i class="fa-solid fa-truck" style="margin-left:105px;"></i> Тип ТС    
+						  <span class="info-icon"><i class="fa-solid fa-info" style="background-color:grey; padding: 5px; border-radius:25px; margin-left:85px;" ></i></span>
+						  <div class="info-text">Если ваше траспортное средство является малогабаритным (газель, универсал) выбирайте малотонажное ТС</div></label>
+						  <style>
+						 main .info-text {     
+						 display: none; 
+						 }
+						 main .info-icon:hover + .info-text {   
+						 display: block; 
+						 }
+						  </style>
+                        <select style="height:35px;border: 3px solid grey;border-radius: 9px;" size="1" id="vehicle-select" name="vehicle_type">
+                            {% for key, value in vehicle_types_dict.items %}
+                                <option style="height:35px;" value="{{ key }}">{{value}}</option>
+                            {% endfor %}
+
+                       </select>
+					   <br>
+                                               <label style="padding:3px; color:#fff;border-radius: 9px; background: linear-gradient(45deg, #1c38c3, #f0336c);" for="provider-select"></i> Поставщик</label>
+                        <select class="provider" title="Выбор поставщика" style="height:35px; border-radius: 9px;border: 3px solid grey;border-radius: 9px;" size="1" id="provider-select" name="provider">
+
+                           {% for p in provider %}
+						   {%if user.is_staff%}
+								<option style="height:35px;" value="{{ p.id }}">{{ p.name }}</option>
+                           {%else%}
+									{%if user.customeruser.name == p.name%}
+										<option style="height:35px;" value="{{ p.id }}">{{ p.name }}</option>
+									{%endif%}
+							{%endif%}
+						   {% endfor %}
+                       </select>
+					 <link rel="stylesheet" href="https://snipp.ru/cdn/chosen/1.8.7/chosen.min.css">
+					<script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script><script src="https://snipp.ru/cdn/chosen/1.8.7/chosen.jquery.min.js"></script>
+					<script>
+					$(document).ready(function(){
+						$('.provider').chosen({ 
+						width: '100%',
+						no_results_text: 'Совпадений не найдено',
+						placeholder_text_single: 'Выберите поставщика'
+    });
+});
+</script>
+                       
+                       <br><label  style="padding:3px; color:#fff; border-radius: 9px; background: linear-gradient(45deg, #1c38c3, #f0336c);;" for="date-slot"><i class="fa-solid fa-calendar-days"></i> Дата</label>
+                       <input style="height:35px;border: 3px solid grey;border-radius: 9px;"placeholder="01.01.2000" id="date-slot" name="date" type="date">
+                      <br> <br>
+                       <label style="padding:3px; color:#fff;border-radius: 9px; background: linear-gradient(45deg, #1c38c3, #f0336c);" for="warehouse-select"><i class="fa-solid fa-warehouse"></i>  Склад</label>
+
+                       <select style="height:35px; border-radius: 9px;border: 3px solid grey;border-radius: 9px;" size="1" id="warehouse-select" name="warehouse">
+                           {% for w in warehouse %}
+                            <option style="height:35px;" value="{{ w.id }}">{{ w.name }}</option>
+                           {% endfor %}
+                       </select>
+                       <br>
+                        <br><label style="padding:3px; color:#fff; border-radius: 9px; background: linear-gradient(45deg, #1c38c3, #f0336c);" for="time-slot_select"><i class="fa-solid fa-clock"></i>  Тайм слот</label>
+                       <select style="height:35px;border: 3px solid grey;border-radius: 9px;padding: 2px;" size="1" id="time-slot_select" name="timeslot">
+
+                       </select>
+                       <script>
+            function azaza() {
+                if ($('#date-slot').val() && $('#warehouse-select').val() ) {
+                    $.ajax({
+                          type: "POST",
+                          url: "{% url 'processing' %}",
+                          data: {
+                            'csrfmiddlewaretoken': '{{ csrf_token }}',
+                            'date': $('#date-slot').val(), // from form
+                            'warehouse': $('#warehouse-select').val(), // from form
+                            'vehicle_type': $('#vehicle-select').val(), // from form
+                          },
+                          success: function (data) {
+                              let json = $.parseJSON(data);
+                              $('#time-slot_select').empty();
+                              for (let i in json.slots)
+                                  $('#time-slot_select').append('<option value=' + json.slots[i] + '>' + json.slots[i] + '</option>');
+                          },
+                          error: function (response) {
+                              alert('Неверно');
+                          }
+                        });
+                    return false;
+                }
+            }
+
+                $('#date-slot').blur(function () {
+                    azaza();
+                });
+
+                $('#warehouse-select').blur(function () {
+                    azaza();
+                });
+
+                $('#vehicle-select').blur(function () {
+                    azaza();
+                });
+        </script>
+                   <br>
+                 <input class="talonsub" onclick="showMessage()" type="submit" value="Талон на въезд">
+				 <script>
+					function showMessage() {   
+					alert("Успешно забронированно!");
+				}
+</script>
+               </form>
+
+    </div>
+
+    {%else%}
+    <h2>Вы не вошли в аккаунт</h2>
+    <a href="{% url 'login'  %}" class="btn btn-warning">Войти</a>
+    {%endif%}
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends 'main/layout.html' %} {%block title%} Редактор броней {%endblock%}
+{%block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/reception.css' %}" />
+
+
+<head>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.15/dist/sweetalert2.min.css"
+  />
+  <!-- Подключение библиотеки SweetAlert -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.15/dist/sweetalert2.min.js"></script>
+</head>
+
+<div class="alertWrapper">
+  <div class="alert">
+    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+    Внимание! Изменения, проведенные вами, могут привести к некорректной работе системы. Будьте внимательны!
+  </div>
+</div>
+<div class="containerHeader">
+  <div class="layoutHeader">
+    <div class="pageInfo">
+      <i class="fa-brands fa-wpforms"></i>
+      <h2>Редактирование прибытия ТС</h2>
+    </div>
+    <div class="containerWelcome">
+      <div class="buttonContainerMenu">
+        <button class="profile">
+          <a  href="{% url 'logout' %}?next=/timeslots/">
+          Выйти
+          </a>
+        </button>
+        <button class="btnMenu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box-inner">
+  <div class="formWrapper">
+    <div class="forms">
+      <h3>
+        Пожалуйста, во избежания ошибки, отмечая время прибытия машины на ворота
+        не нажимайте кнопку "Сохранить". Дождитесь окончания отгрузки и
+        оттметьте все данные сразу
+      </h3>
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="buttonContainerForm">
+          <button
+            id="myButton"
+            type="submit"
+            class="submitButton"
+            name="pick_gate_button"
+          >
+            <i class="fas fa-car fa-lg"></i>
+            <span>Отметить прибытие на ворота</span>
+          </button>
+          <button
+            id="myButton"
+            type="submit"
+            class="submitButton"
+            name="pick_end_button"
+          >
+            <i class="fas fa-car fa-lg"></i>
+            <span>Отметить отъезд от ворот</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock %}

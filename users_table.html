@@ -1,0 +1,52 @@
+{% extends 'main/layout.html' %}
+
+{%block title%}
+Панель сотрудника
+{%endblock%}
+{% load render_table from django_tables2 %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'main/css/user_table.css' %}" />
+<div class="containerHeader positionSticky">
+  <div class="layoutHeader">
+    <div class="pageInfo">
+      <i class="fa-brands fa-wpforms"></i>
+      <h2>Админ панель</h2>
+    </div>
+    <div class="containerWelcome">
+      <div class="buttonContainerMenu">
+        <button class="profile">
+          <a  href="{% url 'logout' %}?next=/timeslots/">
+          Выйти
+          </a>
+        </button>
+        <button class="btnMenu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </div> 
+  <div class="buttonWrapper">
+    <a class="submitButton" href="{% url 'add_customer_user'%}">Добавить пользователя</a>
+  </div>
+</div>
+  <table class="table table-bottom">
+    <thead>
+      <tr>
+        {% for column in table.columns %}
+          <th>{{ column }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody >
+      {% for row in table.rows %}
+        <tr >
+          {% for cell in row %}
+            <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
